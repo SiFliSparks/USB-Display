@@ -1,0 +1,5 @@
+source "D:/OpenSiFli/SiFli-SDK/customer/boards/sf32lb58-lcd_a128r32n1_a1_dsi/hcpu/Kconfig.board"
+source "$SIFLI_SDK/customer/boards/Kconfig.v2"
+source "$SIFLI_SDK/Kconfig.v2"
+orsource "sf-pkgs/Kconfig.conandeps"
+rsource "Kconfig.proj"
