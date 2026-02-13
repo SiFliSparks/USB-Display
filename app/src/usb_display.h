@@ -12,7 +12,7 @@
 extern "C" {
 #endif
 
-/* Display Configuration */
+/* Display Configuration , change it to the actual resolution. */
 #define USB_DISP_WIDTH   720
 #define USB_DISP_HEIGHT  720
 

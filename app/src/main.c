@@ -2,12 +2,6 @@
  * SPDX-FileCopyrightText: 2025 SiFli Technologies(Nanjing) Co, Ltd
  *
  * SPDX-License-Identifier: Apache-2.0
- *
- * USB Display Device Main
- * Compatible with: chuanjinpang/win10_idd_xfz1986_usb_graphic_driver_display
- *
- * The MCU acts as a USB display device:
- *   PC (Windows with IDD driver) --USB--> MCU ---> LCD Screen
  */
 #include "rtthread.h"
 #include "bf0_hal.h"
@@ -29,14 +23,6 @@ static void display_thread_entry(void *parameter)
  */
 int main(void)
 {
-    rt_kprintf("\n");
-    rt_kprintf("╔═══════════════════════════════════════════════════════╗\n");
-    rt_kprintf("║     CherryUSB Display Device Demo                    ║\n");
-    rt_kprintf("║     Compatible: Windows IDD Driver                    ║\n");
-    rt_kprintf("║     Resolution: %d x %d RGB565                      ║\n", 
-               USB_DISP_WIDTH, USB_DISP_HEIGHT);
-    rt_kprintf("╚═══════════════════════════════════════════════════════╝\n");
-    rt_kprintf("\n");
     
     /* Initialize USB display device stack */
     usb_display_init(0, (uintptr_t)USBC_BASE);

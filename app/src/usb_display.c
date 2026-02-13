@@ -27,7 +27,7 @@
 #endif
 
 /* Frame Buffer Configuration */
-#define FRAME_BUFSIZE      (720 * 720 * 2)  /* RGB565: 351,000 bytes */
+#define FRAME_BUFSIZE      (720 * 720 * 2)  /* RGB565 ,If you need to change the resolution, please modify it here: change (720 * 720 * 2) to (width * height * 2).*/
 #define FRAME_COUNT        2                /* Double buffering */
 
 /* Config descriptor size: Config(9) + Interface(9) + EP_OUT(7) + EP_IN(7) = 32 */
@@ -62,7 +62,7 @@ static const uint8_t device_quality_descriptor[] = {
  * 
  * The Windows IDD driver parses this string to configure the display!
  * Format: "cherryusb_R<width>x<height>_E<encoding><quality>_Fps<fps>_Bl<buffer_kb>"
- * 
+ * Change the resolution here to the resolution of the hardware you are using.
  * Example: "cherryusb_R640x480_Ergb16_Fps30_Bl128"
  * 
  * Fields:
@@ -74,7 +74,7 @@ static const uint8_t device_quality_descriptor[] = {
 static const char *string_descriptors[] = {
     (const char[]){ 0x09, 0x04 },                      /* Langid */
     "CherryUSB",                                        /* Manufacturer */
-    "cherryusb_R720x720_Ergb16_Fps6",           /* Product ⚡ */
+    "cherryusb_R720x720_Ergb16_Fps12",           /* Product  */
     "2025020800",                                       /* Serial Number */
 };
 
@@ -118,13 +118,6 @@ const struct usb_descriptor usb_display_descriptor = {
 
 /* ======================== Frame Buffers (PSRAM) ======================== */
 
-/*
- * Allocate frame buffers in PSRAM using L2_RET_BSS_SECT
- * This ensures:
- *   1. Proper alignment for USB DMA
- *   2. Non-cacheable memory region
- *   3. Large contiguous memory allocation
- */
 #define FRAME_POOL_SIZE (FRAME_COUNT * FRAME_BUFSIZE)
 
 /* L2_RET_BSS_SECT is a single-argument macro that acts as a section attribute */
@@ -167,15 +160,7 @@ static void usbd_event_handler(uint8_t busid, uint8_t event)
 static struct usbd_interface s_display_intf;
 
 void usb_display_init(uint8_t busid, uint32_t reg_base)
-{
-    rt_kprintf("===========================================\n");
-    rt_kprintf("  USB Display Device Initialization\n");
-    rt_kprintf("  Resolution: %dx%d RGB565\n", USB_DISP_WIDTH, USB_DISP_HEIGHT);
-    rt_kprintf("  Frame Buffer: %d bytes x %d\n", FRAME_BUFSIZE, FRAME_COUNT);
-    rt_kprintf("  Compatible: chuanjinpang IDD Driver\n");
-    rt_kprintf("===========================================\n");
-    
-    /* Initialize frame buffers using fixed offset in PSRAM pool */
+{   /* Initialize frame buffers using fixed offset in PSRAM pool */
     for (uint32_t i = 0; i < FRAME_COUNT; i++) {
         s_frames[i].frame_buf = &psram_frame_pool[i * FRAME_BUFSIZE];
         s_frames[i].frame_bufsize = FRAME_BUFSIZE;
@@ -326,15 +311,6 @@ void usb_display_task(uint8_t busid)
     int ret;
     uint32_t frame_count = 0;
     uint32_t total_bytes = 0;
-    
-    rt_kprintf("\n");
-    rt_kprintf("╔════════════════════════════════════════════════════╗\n");
-    rt_kprintf("║  USB Display Task Started                         ║\n");
-    rt_kprintf("║  Resolution: %dx%d RGB565                        ║\n", 
-               USB_DISP_WIDTH, USB_DISP_HEIGHT);
-    rt_kprintf("║  Compatible: Windows IDD Driver                   ║\n");
-    rt_kprintf("╚════════════════════════════════════════════════════╝\n");
-    rt_kprintf("\n");
     
     /* Initialize LCD output */
     if (lcd_output_init() != 0) {
